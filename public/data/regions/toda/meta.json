@@ -1,0 +1,22 @@
+{
+  "name": "toda",
+  "label": "戸田市・荒川調節池 (戸田市街地・戸田公園・彩湖)",
+  "label_en": "Toda City & Arakawa Basin",
+  "nx": 500,
+  "ny": 500,
+  "res": 10,
+  "crs": "EPSG:6677",
+  "originE": -18620,
+  "originN": -18010,
+  "center": {
+    "lat": 35.815,
+    "lon": 139.655
+  },
+  "groundMin": -3.3838456635714067,
+  "groundMax": 24.353746541351597,
+  "aerial": {
+    "width": 1000,
+    "height": 1000
+  },
+  "built": "2026-10-18T23:25:56.323Z"
+}

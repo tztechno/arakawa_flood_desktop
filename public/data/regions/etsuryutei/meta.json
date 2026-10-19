@@ -1,0 +1,22 @@
+{
+  "name": "etsuryutei",
+  "label": "越流堤・流入部 (羽根倉橋・秋ヶ瀬公園北)",
+  "label_en": "Overflow Weir (Hanekura Bridge)",
+  "nx": 600,
+  "ny": 600,
+  "res": 4,
+  "crs": "EPSG:6677",
+  "originE": -22272,
+  "originN": -14084,
+  "center": {
+    "lat": 35.862,
+    "lon": 139.6
+  },
+  "groundMin": 0.533700860334275,
+  "groundMax": 17.068090766255125,
+  "aerial": {
+    "width": 1200,
+    "height": 1200
+  },
+  "built": "2026-10-18T15:52:02.620Z"
+}

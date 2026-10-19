@@ -1,0 +1,679 @@
+:root {
+  --bg-dark: #0b111e;
+  --panel-bg: rgba(14, 23, 38, 0.88);
+  --panel-border: rgba(56, 189, 248, 0.16);
+  --accent-cyan: #00e5ff;
+  --accent-blue: #38bdf8;
+  --accent-orange: #fb923c;
+  --accent-green: #22c55e;
+  --accent-red: #f43f5e;
+  --text-main: #f1f5f9;
+  --text-dim: #94a3b8;
+  --font-main: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-dark);
+  font-family: var(--font-main);
+  color: var(--text-main);
+}
+
+#app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+/* 3D Canvas Container */
+#viewport {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+#canvas3d {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 3D Screen Label Overlay */
+#labelOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.mapLabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -100%);
+  display: none;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.1s ease-out;
+}
+
+.mapLabel .labelPin {
+  width: 2px;
+  height: 16px;
+  background: var(--accent-cyan);
+  margin: 0 auto;
+  box-shadow: 0 0 8px var(--accent-cyan);
+}
+
+.mapLabel .labelCard {
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  backdrop-filter: blur(8px);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.mapLabel .labelTitle {
+  color: #fff;
+}
+
+.mapLabel .labelElev {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--accent-cyan);
+}
+
+.mapLabel.type-weir .labelCard {
+  border-color: var(--accent-cyan);
+  background: rgba(0, 40, 60, 0.92);
+}
+
+.mapLabel.type-levee .labelCard {
+  border-color: var(--accent-orange);
+  background: rgba(50, 25, 10, 0.92);
+}
+
+.mapLabel.type-lake .labelCard {
+  border-color: #38bdf8;
+  background: rgba(10, 30, 60, 0.92);
+}
+
+/* Control Panel (Sidebar) */
+#sidebar {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 380px;
+  max-height: calc(100vh - 32px);
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(20px);
+  border-radius: 14px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+}
+
+#sidebar.collapsed {
+  transform: translateX(-420px);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.collapseBtn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-dim);
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.15s ease;
+}
+.collapseBtn:hover {
+  background: rgba(0, 229, 255, 0.2);
+  color: #fff;
+  border-color: var(--accent-cyan);
+}
+
+/* Floating button to reopen sidebar */
+.floatingOpenBtn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(14, 23, 38, 0.92);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 10px;
+  color: #fff;
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(0, 229, 255, 0.3);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.floatingOpenBtn:hover {
+  transform: translateY(-2px);
+  background: rgba(0, 40, 70, 0.96);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 229, 255, 0.5);
+}
+
+.sidebarHeader {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.08) 0%, rgba(56, 189, 248, 0) 100%);
+}
+
+.appTitle {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(90deg, #ffffff 0%, var(--accent-cyan) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.appSubtitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.sidebarScroll {
+  padding: 16px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sidebarScroll::-webkit-scrollbar {
+  width: 5px;
+}
+.sidebarScroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+/* Section cards */
+.panelSection {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sectionHeader {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--accent-blue);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Forms & Controls */
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+select, input[type="text"], input[type="number"] {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: var(--font-main);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+select:focus, input:focus {
+  border-color: var(--accent-cyan);
+}
+
+/* Water Level Slider & Badges */
+.sliderCard {
+  background: rgba(0, 229, 255, 0.04);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.levelValueRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.levelDisplay {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  text-shadow: 0 0 16px rgba(0, 229, 255, 0.4);
+}
+
+.levelUnit {
+  font-size: 13px;
+  color: var(--text-dim);
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.tpDisplay {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.rangeSlider {
+  width: 100%;
+  accent-color: var(--accent-cyan);
+  cursor: pointer;
+}
+
+/* Slider Marker Quick Buttons */
+.markerButtons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.markerBtn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-dim);
+  border-radius: 4px;
+  padding: 5px 2px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.markerBtn:hover {
+  background: rgba(0, 229, 255, 0.15);
+  color: #fff;
+  border-color: var(--accent-cyan);
+}
+
+.markerBtn.weir {
+  border-color: rgba(0, 229, 255, 0.5);
+  color: var(--accent-cyan);
+}
+
+/* Metrics Grid */
+.metricsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.metricBox {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.metricBox.fullWidth {
+  grid-column: span 2;
+}
+
+.metricLabel {
+  font-size: 10.5px;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.metricValue {
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  margin-top: 2px;
+}
+
+.metricValue.cyan { color: var(--accent-cyan); }
+.metricValue.green { color: var(--accent-green); }
+.metricValue.orange { color: var(--accent-orange); }
+
+.capacityBarWrap {
+  margin-top: 6px;
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.capacityBarFill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+  transition: width 0.2s ease;
+}
+
+/* Playback Controls */
+.playbackRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-main);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.btn.primary {
+  background: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  color: #0b111e;
+}
+.btn.primary:hover {
+  background: #33ecff;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.5);
+}
+
+/* Checkbox Row */
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.checkRow input[type="checkbox"] {
+  accent-color: var(--accent-cyan);
+}
+
+/* Preset Camera Views */
+.viewButtons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.viewBtn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.viewBtn:hover {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: var(--accent-blue);
+  color: #fff;
+}
+
+/* Bottom Drawer (Cross-Section & Charts) */
+#bottomDrawer {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  left: 412px;
+  height: 230px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(20px);
+  border-radius: 14px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#bottomDrawer.minimized {
+  transform: translateY(calc(100% - 38px));
+}
+
+.drawerHeader {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drawerTabs {
+  display: flex;
+  gap: 12px;
+}
+
+.drawerTab {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+
+.drawerTab.active {
+  color: var(--accent-cyan);
+  background: rgba(0, 229, 255, 0.1);
+}
+
+.drawerToggle {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 12px;
+  cursor: pointer;
+}
+.drawerToggle:hover { color: #fff; }
+
+.drawerContent {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  height: calc(100% - 38px);
+}
+
+.drawerCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Scenario description banner */
+.scenarioDesc {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--text-dim);
+  background: rgba(0, 0, 0, 0.25);
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+
+/* City Inundation Trigger Box */
+.cityInundationBox {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: rgba(244, 63, 94, 0.08);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  border-radius: 8px;
+}
+
+.highlightRow {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 12px;
+}
+.highlightRow input[type="checkbox"] {
+  accent-color: var(--accent-red);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.cityHint {
+  font-size: 10px;
+  color: var(--text-dim);
+  line-height: 1.4;
+  margin-top: 4px;
+  margin-left: 24px;
+}
+
+/* City Inundation Metric Box */
+.alertBox {
+  background: rgba(244, 63, 94, 0.06);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.alertHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(244, 63, 94, 0.2);
+}
+
+.statusText {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(34, 197, 94, 0.2);
+  color: var(--accent-green);
+}
+.statusText.danger {
+  background: rgba(244, 63, 94, 0.25);
+  color: #ff4d6d;
+  animation: pulseAlert 1.5s infinite;
+}
+
+@keyframes pulseAlert {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.cityMetricGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+
+.subLabel {
+  display: block;
+  font-size: 9.5px;
+  color: var(--text-dim);
+}
+
+.subVal {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  margin-top: 1px;
+}
+
+/* Primary view button highlight */
+.viewBtn.primaryView {
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.25), rgba(56, 189, 248, 0.15));
+  border-color: var(--accent-cyan);
+  color: #fff;
+  font-weight: 700;
+}
+.viewBtn.primaryView:hover {
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.4), rgba(56, 189, 248, 0.3));
+}
+
+.cameraHint {
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--text-dim);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 6px 8px;
+  border-radius: 4px;
+  margin-top: 4px;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+}

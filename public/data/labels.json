@@ -1,0 +1,152 @@
+[
+  {
+    "id": "upstream_arakawa",
+    "name": "荒川本川 (上流・川島/上尾方面)",
+    "name_en": "Upper Arakawa River Channel",
+    "lat": 35.895,
+    "lon": 139.555,
+    "type": "river",
+    "desc": "秩父山系・入間川合流点から大量の洪水が流下してくる荒川上流域。",
+    "desc_en": "Upper Arakawa, where floodwater from the Chichibu mountains and the Iruma River confluence flows down."
+  },
+  {
+    "id": "etsuryutei",
+    "name": "★ 越流堤 (流入部 天端 A.P.+8.70m)",
+    "name_en": "Overflow Weir (Crest A.P. +8.70m)",
+    "lat": 35.859,
+    "lon": 139.6025,
+    "elevAP": 8.7,
+    "elevTP": 7.57,
+    "type": "weir",
+    "desc": "増水時に荒川本川から調節池へ水を計画流入させる低堤。水位がA.P.+8.70mを超えると遊水池へ越流が開始します。",
+    "desc_en": "Low levee that lets the Arakawa spill into the basin by design. Overflow starts once the river exceeds A.P.+8.70m."
+  },
+  {
+    "id": "hanekura",
+    "name": "羽根倉橋 (国道463号)",
+    "name_en": "Hanekura Bridge (R463)",
+    "lat": 35.8645,
+    "lon": 139.598,
+    "type": "bridge",
+    "desc": "越流堤の直上流に位置する荒川本川の主要橋梁。",
+    "desc_en": "Major Arakawa bridge just upstream of the overflow weir."
+  },
+  {
+    "id": "igyo_levee",
+    "name": "囲ぎょう堤 (仕切り堤防 A.P.+15.1m)",
+    "name_en": "Dividing Levee (Igyo-tei)",
+    "lat": 35.8398,
+    "lon": 139.607,
+    "elevAP": 15.1,
+    "elevTP": 13.97,
+    "type": "levee",
+    "desc": "荒川本川と第一調節池を隔てる堤防。洪水を遊水池内に安全に閉じ込め、本川への逆流を防ぎます。",
+    "desc_en": "Levee separating the Arakawa from the 1st Retarding Basin; it keeps floodwater inside the basin and stops backflow to the river."
+  },
+  {
+    "id": "saiko_basin_area",
+    "name": "荒川第一調節池 区域 (総容量 3,900万m³)",
+    "name_en": "Arakawa 1st Retarding Basin (39M m³)",
+    "lat": 35.828,
+    "lon": 139.626,
+    "type": "lake",
+    "desc": "越流堤・囲ぎょう堤・本堤防に囲まれた広大な遊水池。秋ヶ瀬公園および彩湖から構成され、都心の氾濫を防ぎます。",
+    "desc_en": "Large retarding basin enclosed by the overflow weir, the Igyo-tei levee and the main levee; made up of Akigase Park and Saiko Lake, it protects central Tokyo from flooding."
+  },
+  {
+    "id": "akigase",
+    "name": "秋ヶ瀬公園 (調節池北部 一時貯留地)",
+    "name_en": "Akigase Park (North Retention Basin)",
+    "lat": 35.845,
+    "lon": 139.613,
+    "type": "park",
+    "desc": "平常時は緑地公園。越流堤から流入した洪水の初期一時貯留地として機能します。",
+    "desc_en": "A park in normal times; the first compartment to receive floodwater coming over the weir."
+  },
+  {
+    "id": "akigase_bridge",
+    "name": "秋ヶ瀬橋 (県道40号)",
+    "name_en": "Akigase Bridge",
+    "lat": 35.836,
+    "lon": 139.619,
+    "type": "bridge",
+    "desc": "秋ヶ瀬公園と彩湖の境界を跨ぐ橋梁。",
+    "desc_en": "Bridge crossing between Akigase Park and Saiko Lake."
+  },
+  {
+    "id": "saiko",
+    "name": "彩湖 (荒川貯水池 / 調節池南部)",
+    "name_en": "Saiko Lake (Reservoir Bed)",
+    "lat": 35.823,
+    "lon": 139.63,
+    "elevAP": 1.65,
+    "elevTP": 0.52,
+    "type": "lake",
+    "desc": "非洪水期満水位 A.P.+3.90m（洪水期は A.P.+1.65m）。洪水時は満水位 A.P.+11.925m まで湛水し、最大3,900万m³の洪水を調節します。",
+    "desc_en": "Non-flood-season full level A.P.+3.90m (flood season A.P.+1.65m). In floods it fills up to the full level A.P.+11.925m, regulating up to 39 million m³."
+  },
+  {
+    "id": "doman",
+    "name": "道満グリーンパーク",
+    "name_en": "Doman Green Park",
+    "lat": 35.816,
+    "lon": 139.636,
+    "type": "park",
+    "desc": "彩湖沿いのレクリエーション広場。大洪水時は完全に水没して洪水を貯留します。",
+    "desc_en": "Recreation park beside Saiko; fully submerged and used for storage in large floods."
+  },
+  {
+    "id": "sakidama",
+    "name": "幸魂大橋 (東京外環道 / 国道298号)",
+    "name_en": "Sakidama Bridge (Gaikan Expy)",
+    "lat": 35.8125,
+    "lon": 139.635,
+    "type": "bridge",
+    "desc": "彩湖の南端を跨ぐ斜張橋。",
+    "desc_en": "Cable-stayed bridge over the southern end of Saiko."
+  },
+  {
+    "id": "sasame_gate",
+    "name": "🔒 笹目流出水門 (出口関門・洪水時【全閉】)",
+    "name_en": "Sasame Sluice Gate [CLOSED during flood]",
+    "lat": 35.807,
+    "lon": 139.64,
+    "elevAP": 7.5,
+    "elevTP": 6.37,
+    "type": "gate",
+    "desc": "荒川第一調節池の最南端出口。洪水時は下流への氾濫を防ぐため【全閉】とされ、流入水を遊水池内に完全貯留します。",
+    "desc_en": "Southern outlet of the basin. Kept CLOSED during floods so all inflow is stored instead of flowing downstream."
+  },
+  {
+    "id": "arakawa_main_channel",
+    "name": "荒川本川 (低水路・高水敷)",
+    "name_en": "Arakawa Main River Channel",
+    "lat": 35.84,
+    "lon": 139.605,
+    "type": "river",
+    "desc": "増水時に濁流が流下する荒川本川の河道。",
+    "desc_en": "Main channel of the Arakawa, where the flood flow passes."
+  },
+  {
+    "id": "arakawa_main_levee_l",
+    "name": "荒川左岸本堤 (防護本堤 A.P.+15.2m)",
+    "name_en": "Left Bank Main Levee (15.2m A.P.)",
+    "lat": 35.8245,
+    "lon": 139.6342,
+    "elevAP": 15.2,
+    "elevTP": 14.07,
+    "type": "levee",
+    "desc": "調節池東側にそびえ立つ大堤防。遊水池が満水になっても外郭背後地を守り切ります。",
+    "desc_en": "Main levee on the east side of the basin; it protects the city behind it even when the basin is full."
+  },
+  {
+    "id": "downstream_iwabuchi",
+    "name": "荒川下流 (岩淵水門・隅田川分派点)",
+    "name_en": "Lower Arakawa (Iwabuchi Sluice Gate)",
+    "lat": 35.786,
+    "lon": 139.728,
+    "type": "gate",
+    "desc": "第一調節池の貯水によって水位低下効果が発揮される下流東京都心防護の要衝。",
+    "desc_en": "Key point protecting central Tokyo, where the basin's storage lowers the downstream river level."
+  }
+]

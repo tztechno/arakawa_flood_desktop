@@ -1,0 +1,21 @@
+{
+  "name": "outer",
+  "label": "荒川流域 広域背景地形 (arakawa.tif)",
+  "label_en": "Arakawa basin backdrop terrain (arakawa.tif)",
+  "nx": 700,
+  "ny": 700,
+  "res": 240,
+  "widthM": 168000,
+  "heightM": 168000,
+  "crs": "EPSG:6677",
+  "originE": -103720,
+  "originN": 66280,
+  "groundMin": -28.130529216636646,
+  "groundMax": 3744.1399087800464,
+  "aerial": {
+    "width": 3072,
+    "height": 3072
+  },
+  "demSource": "DOCS/arakawa.tif (1 arc-second DEM)",
+  "built": "2026-10-19T08:43:52.330Z"
+}

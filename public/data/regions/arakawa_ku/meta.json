@@ -1,0 +1,22 @@
+{
+  "name": "arakawa_ku",
+  "label": "東京都荒川区 (荒川下流・南千住・町屋・隅田川)",
+  "label_en": "Arakawa Ward (Lower Arakawa River)",
+  "nx": 500,
+  "ny": 500,
+  "res": 10,
+  "crs": "EPSG:6677",
+  "originE": -6420,
+  "originN": -26120,
+  "center": {
+    "lat": 35.742,
+    "lon": 139.79
+  },
+  "groundMin": -4.48466868659731,
+  "groundMax": 23.534942324071835,
+  "aerial": {
+    "width": 1000,
+    "height": 1000
+  },
+  "built": "2026-10-18T23:26:06.342Z"
+}

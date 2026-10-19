@@ -1,0 +1,25 @@
+{
+  "name": "wide",
+  "label": "荒川第一調節池・荒川流域 広域パノラマ地形 (32km × 14km)",
+  "label_en": "Arakawa Basin & River (Ultra-Wide 32km x 14km)",
+  "nx": 1600,
+  "ny": 700,
+  "widthM": 32000,
+  "heightM": 14000,
+  "res": 20,
+  "crs": "EPSG:6677",
+  "originE": -35720,
+  "originN": -10720,
+  "center": {
+    "lat": 35.84,
+    "lon": 139.615
+  },
+  "groundMin": -4.211999931335449,
+  "groundMax": 105.79000091552734,
+  "aerial": {
+    "width": 2560,
+    "height": 1120
+  },
+  "built": "2026-10-19T07:17:28.712Z",
+  "demSource": "GSI DEM5A z15 (DEM10B fallback), ridge-preserving 20m resample"
+}

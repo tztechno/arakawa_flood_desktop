@@ -1,0 +1,22 @@
+{
+  "name": "saiko",
+  "label": "荒川第一調節池 全域 (彩湖・秋ヶ瀬・越流堤)",
+  "label_en": "Arakawa 1st Retarding Basin (Saiko)",
+  "nx": 600,
+  "ny": 600,
+  "res": 10,
+  "crs": "EPSG:6677",
+  "originE": -22720,
+  "originN": -15170,
+  "center": {
+    "lat": 35.836,
+    "lon": 139.615
+  },
+  "groundMin": -3.2658639233838027,
+  "groundMax": 28.531023266071674,
+  "aerial": {
+    "width": 1200,
+    "height": 1200
+  },
+  "built": "2026-10-18T15:52:00.279Z"
+}

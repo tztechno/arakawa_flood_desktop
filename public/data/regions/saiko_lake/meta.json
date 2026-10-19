@@ -1,0 +1,22 @@
+{
+  "name": "saiko_lake",
+  "label": "彩湖・道満グリーンパーク (貯水池南)",
+  "label_en": "Saiko Lake & Doman Park",
+  "nx": 600,
+  "ny": 600,
+  "res": 5,
+  "crs": "EPSG:6677",
+  "originE": -19695,
+  "originN": -18675,
+  "center": {
+    "lat": 35.818,
+    "lon": 139.632
+  },
+  "groundMin": -3.6672592558356305,
+  "groundMax": 17.642197682595025,
+  "aerial": {
+    "width": 1200,
+    "height": 1200
+  },
+  "built": "2026-10-18T15:52:05.111Z"
+}

@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arakawa Flood — 荒川第一調節池・荒川流域 広域パノラマ 3Dシミュレーター (32km × 14km)</title>
+  <meta name="description" content="arakawa.tif 広域DEMと航空写真による荒川第一調節池（彩湖・秋ヶ瀬）および越流堤・土手（堤防群）の治水機能を観察する3Dシミュレーター" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- 3D Canvas Viewport -->
+    <div id="viewport">
+      <canvas id="canvas3d"></canvas>
+      <div id="labelOverlay"></div>
+    </div>
+
+    <!-- Floating Button to Re-open Sidebar when Collapsed -->
+    <button id="sidebarOpenBtn" class="floatingOpenBtn" style="display: none;" data-i18n-title="panel.openTitle">
+      <span>🎛</span> <span data-i18n="panel.open">パネル展開</span>
+    </button>
+
+    <!-- Control Panel Sidebar (Collapsible) -->
+    <aside id="sidebar">
+      <div class="sidebarHeader">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <h1 class="appTitle">
+            <span>🌊</span> Arakawa Flood
+          </h1>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button id="langToggleBtn" class="collapseBtn" style="width: auto; padding: 0 8px; font-size: 11px; font-weight: 700;" data-i18n="lang.toggle" data-i18n-title="lang.toggleTitle">EN</button>
+            <button id="sidebarToggleBtn" class="collapseBtn" data-i18n-title="panel.collapseTitle">◀</button>
+          </div>
+        </div>
+        <div class="appSubtitle" data-i18n="app.subtitle">荒川第一調節池・荒川流域 広域パノラマ 3Dシミュレーター (32km × 14km)</div>
+      </div>
+
+      <div class="sidebarScroll">
+        <!-- 1. Water Depth / River Stage Parameter -->
+        <div class="panelSection">
+          <div class="sectionHeader">
+            <span data-i18n="sec.river">1. 荒川水深・水位パラメータ</span>
+            <span id="overflowBadge" style="font-size: 10px; color: var(--accent-cyan); font-weight: 700;" data-i18n="badge.inChannel">河道内流下中</span>
+          </div>
+
+          <div class="sliderCard">
+            <div class="levelValueRow">
+              <div>
+                <span class="levelLabel" style="font-size: 11px; color: var(--text-dim);" data-i18n="river.level">荒川本川 水位</span>
+                <div>
+                  <span id="levelVal" class="levelDisplay">7.50</span>
+                  <span class="levelUnit">A.P. m</span>
+                </div>
+              </div>
+              <div class="tpDisplay" id="tpVal">T.P. +6.37m</div>
+            </div>
+
+            <input id="riverLevelSlider" class="rangeSlider" type="range" min="1.50" max="15.00" step="0.05" value="7.50" />
+
+            <!-- Quick Jump Markers -->
+            <div class="markerButtons">
+              <button class="markerBtn" data-val="2.50" data-i18n="marker.normal">平常 (2.5m)</button>
+              <button class="markerBtn" data-val="6.50" data-i18n="marker.warning">氾濫注意 (6.5m)</button>
+              <button class="markerBtn weir" data-val="8.70" data-i18n="marker.weir">★越流堤 (8.7m)</button>
+              <button class="markerBtn" data-val="12.35" data-i18n="marker.hagibis">台風19号 (12.35m)</button>
+              <button class="markerBtn" data-val="11.925" data-i18n="marker.full">満水 (11.925m)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Scenario Replay -->
+        <div class="panelSection">
+          <div class="sectionHeader">
+            <span data-i18n="sec.scenario">2. 洪水シナリオ</span>
+          </div>
+          <label>
+            <span data-i18n="scenario.select">シナリオ選択</span>
+            <select id="scenarioSelect">
+              <option value="manual" selected data-i18n="opt.manual">手動パラメータ操作 (スライダー連動)</option>
+              <option value="hagibis2019" data-i18n="opt.hagibis2019">令和元年 台風19号 (2019年実測再現)</option>
+              <option value="flood_l1" data-i18n="opt.flood_l1">計画規模洪水 (L1 洪水・約100年確率)</option>
+              <option value="flood_l2" data-i18n="opt.flood_l2">想定最大規模洪水 (L2 洪水・3,900万m³満水)</option>
+              <option value="step_test" data-i18n="opt.step_test">ステップ増水テスト (+1m/10分)</option>
+            </select>
+          </label>
+
+          <div id="scenarioDesc" class="scenarioDesc">
+            荒川の水深・水位スライダーを動かして、越流堤（8.7m）からの流入と第一調節池（彩湖・秋ヶ瀬）の貯水機能を観察します。
+          </div>
+
+          <!-- Playback Controls (visible for timeline scenarios) -->
+          <div id="playbackControls" style="display: none; flex-direction: column; gap: 8px;">
+            <div class="playbackRow">
+              <button id="playBtn" class="btn primary">▶ 再生</button>
+              <button id="resetBtn" class="btn" data-i18n="btn.reset">↺ リセット</button>
+              <button id="csvBtn" class="btn" data-i18n="btn.csv" data-i18n-title="btn.csvTitle">⬇ CSV出力</button>
+              <span id="timeDisplay" style="font-family: var(--font-mono); font-size: 12px; margin-left: auto;">00:00 / 36:00</span>
+            </div>
+            <label>
+              <span><span data-i18n="speed.label">再生速度:</span> <b id="speedDisplay">300x</b></span>
+              <input id="speedSlider" class="rangeSlider" type="range" min="60" max="1200" step="60" value="300" />
+            </label>
+          </div>
+        </div>
+
+        <!-- 3. Basin & Levee Metrics -->
+        <div class="panelSection">
+          <div class="sectionHeader">
+            <span data-i18n="sec.metrics">3. 遊水池・治水機能メーター</span>
+          </div>
+
+          <div class="metricsGrid">
+            <div class="metricBox">
+              <span class="metricLabel" data-i18n="m.inflow">越流流入量 Q</span>
+              <span id="metricInflow" class="metricValue cyan">0 m³/s</span>
+            </div>
+            <div class="metricBox">
+              <span class="metricLabel" data-i18n="m.basinLvl">調節池水位</span>
+              <span id="metricBasinLvl" class="metricValue">A.P.+1.65m</span>
+            </div>
+            <div class="metricBox fullWidth">
+              <span class="metricLabel" data-i18n="m.wet">調節池内 浸水面積 (全体 約6.1km²)</span>
+              <span id="metricWetArea" class="metricValue cyan">0.00 km²</span>
+            </div>
+            <div class="metricBox fullWidth">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span class="metricLabel" data-i18n="m.volume">総貯水量 (容量3,900万m³)</span>
+                <span id="metricVolume" class="metricValue green">0.0 万m³ (0.0%)</span>
+              </div>
+              <div class="capacityBarWrap">
+                <div id="capacityBar" class="capacityBarFill"></div>
+              </div>
+            </div>
+            <div class="metricBox fullWidth">
+              <span class="metricLabel" data-i18n="m.downstream">下流都心（荒川区・岩淵水門）水位低減効果</span>
+              <span id="metricDownstream" class="metricValue orange">- 0.0 cm</span>
+            </div>
+            <div class="metricBox fullWidth">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span class="metricLabel" data-i18n="m.gate">出口関門 (排水門)</span>
+                <span id="metricGateStatus" class="metricValue green">🔒 全閉 (洪水貯留中)</span>
+              </div>
+              <div style="font-size: 10px; color: var(--text-dim); margin-top: 4px; line-height: 1.4;" data-i18n="m.gateNote">
+                ※ 洪水時は下流への流出を防ぐため出口関門（排水門）は全閉され、第一調節池内に最大3,900万m³の洪水を閉じ込めます。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Display & Free View Options -->
+        <div class="panelSection">
+          <div class="sectionHeader">
+            <span data-i18n="sec.display">4. 3D表示 &amp; 自由視点 (Free Camera)</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <label>
+              <span data-i18n="display.terrain">地表モード</span>
+              <select id="terrainMode">
+                <option value="0" selected data-i18n="display.aerial">航空写真 (国土地理院)</option>
+                <option value="1" data-i18n="display.elevation">標高段彩 (色分け)</option>
+              </select>
+            </label>
+            <label>
+              <span data-i18n="display.water">水面モード</span>
+              <select id="waterMode">
+                <option value="0" selected data-i18n="display.waterReal">リアル水面</option>
+                <option value="1" data-i18n="display.waterHazard">浸水深ハザード色</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="checkRow">
+            <input id="basinLineCheck" type="checkbox" checked />
+            <span><b data-i18n="display.basinLine">★ 遊水池範囲ライン強調 (立体ネオン囲み)</b></span>
+          </label>
+          <label class="checkRow">
+            <input id="labelsCheck" type="checkbox" checked />
+            <span data-i18n="display.labels">施設・土手ラベル (越流堤・彩湖・囲ぎょう堤)</span>
+          </label>
+
+          <span style="font-size: 11px; color: var(--text-dim); margin-top: 4px; font-weight: 600;" data-i18n="display.camera">カメラ視点</span>
+          <div class="viewButtons">
+            <button class="viewBtn primaryView" data-view="overview" data-i18n="view.overview">🌐 広域全体俯瞰</button>
+            <button class="viewBtn" data-view="regional" data-i18n="view.regional">🗾 流域全体 (背景地形)</button>
+            <button class="viewBtn" data-view="basin" data-i18n="view.basin">🌊 遊水池全域</button>
+            <button class="viewBtn" data-view="weir" data-i18n="view.weir">★ 越流堤・流入部</button>
+            <button class="viewBtn" data-view="saiko" data-i18n="view.saiko">🏞 彩湖・秋ヶ瀬</button>
+            <button class="viewBtn" data-view="gate" data-i18n="view.gate">🔒 出口水門 (全閉)</button>
+            <button class="viewBtn" data-view="eyeLevel" data-i18n="view.eyeLevel">🚶 堤防上アイレベル</button>
+            <button class="viewBtn" data-view="free" data-i18n="view.free">🎮 自由視点リセット</button>
+          </div>
+
+          <div class="cameraHint">
+            <span>💡 <b data-i18n="hint.label">操作</b><span data-i18n="hint.text">: 左ドラッグで回転 / 右ドラッグで平行移動 / ホイールでズーム / WASDで前後左右移動 / Space・Shiftで昇降</span></span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Bottom Drawer: Real-time Cross-Section & Timeline Hydrograph -->
+    <div id="bottomDrawer">
+      <div class="drawerHeader">
+        <div class="drawerTabs">
+          <div class="drawerTab active" data-tab="crossSection" data-i18n="tab.crossSection">堤防・河道・遊水池 横断断面図 (リアルタイム)</div>
+          <div class="drawerTab" data-tab="chart" data-i18n="tab.chart">時系列ハイドログラフ & 貯水曲線</div>
+        </div>
+        <button id="drawerToggleBtn" class="drawerToggle" data-i18n-title="drawer.toggleTitle">▼ 最小化</button>
+      </div>
+
+      <div class="drawerContent">
+        <canvas id="crossSectionCanvas" class="drawerCanvas"></canvas>
+        <canvas id="chartCanvas" class="drawerCanvas" style="display: none;"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
